@@ -16,9 +16,9 @@ jobs:
           distribution: full
           variant: ${{ matrix.racket-variant }}
           version: ${{ matrix.racket-version }}
-      - name: Installing ucd and its dependencies
-        run: raco pkg install --no-docs --auto --name ucd
-      - name: Compiling ucd and building its docs
-        run: raco setup --check-pkg-deps --unused-pkg-deps ucd
-      - name: Testing ucd
-        run: raco test -x -p ucd
+      - name: Installing codepoint and its dependencies
+        run: raco pkg install --no-docs --auto --name codepoint
+      - name: Compiling codepoint and building its docs
+        run: raco setup --check-pkg-deps --unused-pkg-deps codepoint
+      - name: Testing codepoint
+        run: raco test -x -p codepoint

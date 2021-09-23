@@ -1,7 +1,7 @@
 codepoint
 =========
 
-Library for operations on Unicode codepoints.
+Library for operations on Unicode codepoints, and UCD properties.
 
 # Modules
 

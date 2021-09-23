@@ -1,15 +1,20 @@
 #lang info
-
+;;
+;; Collection codepoint.
+;;   Library for operations on Unicode codepoints, and UCD properties
+;;
+;; Copyright (c) 2021 Simon Johnston (johnstonskj@gmail.com).
+;;
 (define collection "codepoint")
-(define pkg-desc "Unicode Codepoint Data")
+(define pkg-desc "Library for operations on Unicode codepoints, and UCD properties")
 (define version "0.1")
 (define pkg-authors '(johnstonskj))
 
-(define deps '("base"))
+(define deps '("base" "srfi-lite-lib"))
 
-(define build-deps '("scribble-lib" "racket-doc" "rackunit-lib"))
+(define build-deps '("scribble-lib" "racket-doc" "sandbox-lib" "rackunit-lib"))
 
-(define scribblings '(("scribblings/codepoint.scrbl" ())))
+(define scribblings '(("scribblings/index.scrbl" (multi-page))))
 
 (define compile-omit-paths '("data" "generated"))
 (define test-omit-paths '("generated" "private" "scribblings"))

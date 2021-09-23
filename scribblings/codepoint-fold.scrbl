@@ -9,7 +9,7 @@
     racket/contract
     codepoint))
 
-@section[]{Module codepoint}
-@defmodule[codepoint]
+@section[]{Module codepoint/fold}
+@defmodule[codepoint/fold]
 
 Functions on the type @code{codepoint?}.
