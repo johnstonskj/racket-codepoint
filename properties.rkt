@@ -90,6 +90,49 @@
   (assert-codepoint! codepoint)
   (hash-ref (force *ucd-general-category*) codepoint failure-result))
 
+(define (ucd-letter-category? codepoint [failure-result (lambda () (codepoint-not-found codepoint 'general-category))])
+  (assert-codepoint! codepoint)
+  (member (ucd-general-category codepoint failure-result) '(Ll Lm Lo Lt Lu)))
+
+(define (ucd-cased-letter-category? codepoint [failure-result (lambda () (codepoint-not-found codepoint 'general-category))])
+  (assert-codepoint! codepoint)
+  (member (ucd-general-category codepoint failure-result) '(Ll Lt Lu)))
+
+(define (ucd-mark-category? codepoint [failure-result (lambda () (codepoint-not-found codepoint 'general-category))])
+  (assert-codepoint! codepoint)
+  (member (ucd-general-category codepoint failure-result) '(Mc Me Mn)))
+
+(define (ucd-number-category? codepoint [failure-result (lambda () (codepoint-not-found codepoint 'general-category))])
+  (assert-codepoint! codepoint)
+  (member (ucd-general-category codepoint failure-result) '(Nd Nl No)))
+
+(define (ucd-punctuation-category? codepoint [failure-result (lambda () (codepoint-not-found codepoint 'general-category))])
+  (assert-codepoint! codepoint)
+  (member (ucd-general-category codepoint failure-result) '(Pc Pd Pe Pf Pi Po Ps)))
+
+(define (ucd-symbol-category? codepoint [failure-result (lambda () (codepoint-not-found codepoint 'general-category))])
+  (assert-codepoint! codepoint)
+  (member (ucd-general-category codepoint failure-result) '(Sc Sk Sm So)))
+
+(define (ucd-separator-category? codepoint [failure-result (lambda () (codepoint-not-found codepoint 'general-category))])
+  (assert-codepoint! codepoint)
+  (member (ucd-general-category codepoint failure-result) '(Zl Zp Zs)))
+
+(define (ucd-other-category? codepoint [failure-result (lambda () (codepoint-not-found codepoint 'general-category))])
+  (assert-codepoint! codepoint)
+  (member (ucd-general-category codepoint failure-result) '(Cc Cf Cn Co Cs)))
+
+(define (ucd-codepoint-type codepoint [failure-result (lambda () (codepoint-not-found codepoint 'general-category))])
+  (assert-codepoint! codepoint)
+  (let ([category (ucd-general-category codepoint failure-result)])
+    (cond
+      [(member category '(Ll Lm Lo Lt Lu Mc Me Mn Nd Nl No Pc Pd Pe Pf Pi Po Ps Sc Sk Sm So Zs)) 'graphic]
+      [(member category '(Cf Zl Zp)) 'format]
+      [(symbol=? category 'Cc) 'control]
+      [(symbol=? category 'Co) 'private-use]
+      [(symbol=? category 'Cs) 'surrogate]
+      [(symbol=? category 'Cn) 'non-character])))
+
 ;; ---------- Implementation - codepoint combining-class
 
 (define *ucd-combining-class*

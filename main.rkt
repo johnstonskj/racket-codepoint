@@ -11,11 +11,23 @@
   codepoint->char
   char->codepoint
   codepoint->unicode-string
+  codepoint-plane
+  codepoint-plane-name
   assert-codepoint!)
 
 ;; ---------- Values
 
 (define *max-codepoint-value* #x10FFFF)
+
+(define *codepoint-plane-names*
+  #(basic-multilingual-plane
+    supplementary-multilingual-plane
+    supplementary-ideographic-plane
+    tertiary-ideographic-plane
+    #f #f #f #f #f #f #f #f #f #f
+    supplementary-special-purpose-plane
+    supplementary-private-use-area-A
+    supplementary-private-use-area-B))
 
 ;; ---------- Implementation - codepoint type
 
@@ -75,6 +87,13 @@
 (define codepoint->char integer->char)
 
 (define char->codepoint char->integer)
+
+(define (codepoint-plane codepoint)
+  (assert-codepoint! codepoint)
+  (floor (/ codepoint #xFFFF)))
+
+(define (codepoint-plane-name codepoint)
+  (vector-ref *codepoint-plane-names* (codepoint-plane codepoint)))
 
 (define (codepoint->unicode-string codepoint)
   (assert-codepoint! codepoint)
