@@ -10,7 +10,8 @@
   codepoint-private-use?
   codepoint->char
   char->codepoint
-  codepoint->unicode-string)
+  codepoint->unicode-string
+  assert-codepoint!)
 
 ;; ---------- Values
 
@@ -18,10 +19,17 @@
 
 ;; ---------- Implementation - codepoint type
 
-(define (codepoint? obj)
+(define (codepoint? v)
   (and 
-    (exact-nonnegative-integer? obj)
-    (<= obj *max-codepoint-value*)))
+    (exact-nonnegative-integer? v)
+    (<= v *max-codepoint-value*)))
+
+(define (assert-codepoint! v [name 'v])
+  (unless (codepoint? v)
+          (raise-arguments-error 
+            'assert-codepoint 
+            "provided value was not a codepoint?" 
+            (symbol->string name) v)))
 
 (define (codepoint-non-character? obj)
   ;; see http://www.unicode.org/versions/corrigendum9.html
@@ -69,8 +77,5 @@
 (define char->codepoint char->integer)
 
 (define (codepoint->unicode-string codepoint)
-  (unless (codepoint? codepoint) (raise-expecting-codepoint 'codepoint->unicode-string))
+  (assert-codepoint! codepoint)
   (format "U+~a" (~r codepoint #:base '(up 16) #:min-width 4 #:pad-string "0")))
-
-(define (raise-expecting-codepoint fn)
-  (raise-arguments-error fn "argument was not a codepoint? value"))

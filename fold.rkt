@@ -22,7 +22,7 @@
   (load-generated-module (current-directory) "case-folding"))
 
 (define (ucd-case-folding codepoint)
-  (unless (codepoint? codepoint) (raise 'expecting-codepoint))
+  (assert-codepoint! codepoint)
   (hash-ref 
     (force *ucd-case-folding*) 
     codepoint 

@@ -221,7 +221,7 @@
 (define (string->decomposition-type str)
   (let ([end (string-index str #\>)])
     (if (false? end)
-        #f
+        'canonical
         (string->symbol (substring str 1 end)))))
 
 ;; (string?) -> (listof codepoint?)

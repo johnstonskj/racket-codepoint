@@ -8,6 +8,7 @@
 (provide
   (except-out (struct-out codepoint-range) codepoint-range)
   make-codepoint-range
+  assert-codepoint-range!
   pair->codepoint-range
   codepoint->codepoint-range
   codepoint-range-length
@@ -32,48 +33,67 @@
   #:prefab)
 
 (define (make-codepoint-range start end)
-  (unless (and (codepoint? start) (codepoint? end)) (raise-expecting-codepoint 'make-codepoint-range))
-  (unless (<= start end) (raise-invalid-codepoint-range 'make-codepoint-range start end))
+  (assert-codepoint! start 'start)
+  (assert-codepoint! end 'end)
+  (unless (<= start end) 
+          (raise-arguments-error 
+            'make-codepoint-range
+            "the value of start must be less than, or equal, to end" 
+            "start" start
+            "end" end))
   (codepoint-range start end))
 
+(define (assert-codepoint-range! v [name 'v])
+  (unless (codepoint-range? v)
+          (raise-arguments-error 
+            'assert-codepoint-range
+            "provided value was not a codepoint-range?" 
+            (symbol->string name) v)))
+
 (define (pair->codepoint-range cpr)
-  (unless (and (pair? cpr) (codepoint? (car cpr)) (codepoint? (cdr cpr))) (raise-expecting-codepoint 'pair->codepoint-range))
+  (assert-codepoint! (car cpr) 'start)
+  (assert-codepoint! (cdr cpr) 'end)
   (make-codepoint-range (car cpr) (cdr cpr)))
 
 (define (codepoint->codepoint-range cp)
-  (unless (codepoint? cp) (raise-expecting-codepoint 'codepoint->codepoint-range))
+  (assert-codepoint! cp)
   (make-codepoint-range cp cp))
 
 (define (codepoint-range-length cpr)
-  (unless (codepoint-range? cpr) (raise-expecting-codepoint-range 'codepoint-range-length))
+  (assert-codepoint-range! cpr)
   (- (codepoint-range-end cpr) (codepoint-range-start cpr)))
 
 (define (codepoint-range=? lhs rhs)
+  (assert-codepoint-range! lhs 'lhs)
+  (assert-codepoint-range! rhs 'rhs)
   (and 
     (= (codepoint-range-start lhs) (codepoint-range-start rhs))
     (= (codepoint-range-end lhs) (codepoint-range-end rhs))))
 
 (define (codepoint-range<? lhs rhs)
+  (assert-codepoint-range! lhs 'lhs)
+  (assert-codepoint-range! rhs 'rhs)
   (< (codepoint-range-end lhs) (codepoint-range-start rhs)))
 
 (define (codepoint-range>? lhs rhs)
+  (assert-codepoint-range! lhs 'lhs)
+  (assert-codepoint-range! rhs 'rhs)
   (> (codepoint-range-end lhs) (codepoint-range-start rhs)))
 
 (define (codepoint-range-compare cpr cp)
-  (unless (codepoint-range? cpr) (raise-expecting-codepoint-range 'codepoint-range-compare))
-  (unless (codepoint? cp) (raise-expecting-codepoint 'codepoint-range-compare))
+  (assert-codepoint-range! cpr)
+  (assert-codepoint! cp)
   (cond 
     [(< cp (codepoint-range-start cpr)) 'before]
     [(> cp (codepoint-range-end cpr)) 'after]
     [else 'within]))
 
 (define (codepoint-range-contains? cpr cp)
-  (unless (codepoint-range? cpr) (raise-expecting-codepoint-range 'codepoint-range-contains?))
-  (unless (codepoint? cp) (raise-expecting-codepoint 'codepoint-range-contains?))
+  (assert-codepoint-range! cpr)
+  (assert-codepoint! cp)
   (and (>= cp (codepoint-range-start cpr)) (<= cp (codepoint-range-end cpr))))
 
 (define (codepoint-range-contains-all? cpr . cpl)
-  (unless (codepoint-range? cpr) (raise-expecting-codepoint-range 'codepoint-range-contains-all?))
   (for/and ([cp cpl]) (codepoint-range-contains? cpr cp)))
 
 (define (codepoint-range-contains-any? cpr . cpl)
@@ -89,26 +109,16 @@
     (codepoint-range-intersects? (car pair) (car (cdr pair)))))
 
 (define (codepoint-range->inclusive-range cpr [step 1])
-  (unless (codepoint-range? cpr) (raise-expecting-codepoint-range 'codepoint-range->inclusive-range))
+  (assert-codepoint-range! cpr)
   (inclusive-range (codepoint-range-start cpr) (codepoint-range-end cpr) step))
 
 (define (codepoint-range->in-inclusive-range cpr [step 1])
-  (unless (codepoint-range? cpr) (raise-expecting-codepoint-range 'codepoint-range->in-inclusive-range))
+  (assert-codepoint-range! cpr)
   (in-inclusive-range (codepoint-range-start cpr) (codepoint-range-end cpr) step))
 
 (define (codepoint-range->unicode-string cpr)
-  (unless (codepoint-range? cpr) (raise-expecting-codepoint-range 'codepoint-range->unicode-string))
+  (assert-codepoint-range! cpr)
   (format 
     "~a..~a" 
     (codepoint->unicode-string (codepoint-range-start cpr)) 
     (codepoint->unicode-string (codepoint-range-end cpr))))
-
-
-(define (raise-expecting-codepoint-range fn)
-  (raise-arguments-error fn "argument was not a codepoint-range? value"))
-
-(define (raise-invalid-codepoint-range fn start end)
-  (raise-arguments-error fn "start value must not be less than end value" "start" start "end" end))
-
-(define (raise-expecting-codepoint fn)
-  (raise-arguments-error fn "argument was not a codepoint? value"))

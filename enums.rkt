@@ -1,9 +1,37 @@
 #lang racket/base
 
 (provide 
+  *bidi-classes*
   *case-folding-status*
+  *decomposition-compatibility-tags*
   *general-categories*
-  *name-alias-types*)
+  *line-breaks*
+  *name-alias-types*
+  *numeric-types*)
+
+(define *bidi-classes*
+  '((L . "Left-to-right")
+    (R . "Right-to-left")
+    (EN . "European Number")
+    (ES . "European Separator")
+    (ET . "European Terminator")
+    (AN . "Arabic Number")
+    (CS . "Common Separator")
+    (B . "Paragraph Separator")
+    (S . "Segment Separator")
+    (WS . "White Space")
+    (ON . "Other Neutral")
+    (BN . "Boundary Neutral")
+    (NSM . "Non-spacing Mark")
+    (AL . "Arabic Letter")
+    (LRO . "Left-to-right Override")
+    (RLO . "Right-to-left Override")
+    (LRE . "Left-to-right Embedding")
+    (PDF . "Pop Directional Formatting")
+    (LRI . "Left-to-right Isolate")
+    (RLI . "Right-to-left Isolate")
+    (FSI . "First Strong Isolate")
+    (PDI . "Pop Directional Isolate")))
 
 (define *case-folding-status*
   '((common . "common case folding, common mappings shared by both simple and full mappings")
@@ -11,12 +39,23 @@
     (full . "full case folding, mappings that cause strings to grow in length. Multiple characters are separated by spaces")
     (turkic . "special case for uppercase I and dotted uppercase I")))
 
-(define *name-alias-types*
-  '((abbreviation . "Commonly occurring abbreviations (or acronyms) for control codes, format characters, spaces, and variation selectors") 
-    (alternate . "A few widely used alternate names for format characters") 
-    (control . "ISO 6429 names for C0 and C1 control functions, and other commonly occurring names for control codes") 
-    (correction . "Corrections for serious problems in the character names") 
-    (figment . "Several documented labels for C1 control code points which were never actually approved in any standard")))
+(define *decomposition-compatibility-tags*
+  '((font> "Font variant (for example, a blackletter form)")
+    (noBreak . "No-break version of a space or hyphen")
+    (initial. "Initial presentation form (Arabic)")
+    (medial . "Medial presentation form (Arabic)")
+    (final . "Final presentation form (Arabic)")
+    (isolated . "Isolated presentation form (Arabic)")
+    (circle . "Encircled form")
+    (super . "Superscript form")
+    (sub . "Subscript form")
+    (vertical . "Vertical layout presentation form")
+    (wide . "Wide (or zenkaku) compatibility character")
+    (narrow . "Narrow (or hankaku) compatibility character")
+    (small . "Small variant form (CNS compatibility)")
+    (square . "CJK squared font variant")
+    (fraction . "Vulgar fraction form")
+    (compat . "Otherwise unspecified compatibility character")))
 
 (define *general-categories*
   '((Lu . "Uppercase letter")
@@ -49,3 +88,68 @@
     (Cn . "Unassigned")
     (Pe . "Close punctuation")
     (Pi . "Initial quote punctuation")))
+
+;; https://www.unicode.org/reports/tr14/#Definitions
+(define *line-breaks* 
+  '(
+    ;; Non-tailorable Line Breaking Classes
+    (BK . "Mandatory Break")
+    (CR . "Carriage Return")
+    (LF . "Line Feed")
+    (CM . "Combining Mark")
+    (NL . "Next Line")
+    (SG . "Surrogate")
+    (WJ . "Word Joiner")
+    (ZW . "Zero Width Space")
+    (GL . "Non-breaking ('Glue')")
+    (SP . "Space")
+    (ZWJ . "Zero Width Joiner")
+    ;; Break Opportunities
+    (B2 . "Break Opportunity Before and After")
+    (BA . "Break After")
+    (BB . "Break Before")
+    (HY . "Hyphen")
+    (CB . "Contingent Break Opportunity")
+    ;; Characters Prohibiting Certain Breaks
+    (CL . "Close Punctuation")
+    (CP . "Close Parenthesis")
+    (EX . "Exclamation/Interrogation")
+    (IN . "Inseparable")
+    (NS . "Nonstarter")
+    (OP . "Open Punctuation")
+    (QU . "Quotation")
+    ;;Numeric Context
+    (IS . "Infix Numeric Separator")
+    (NU . "Numeric")
+    (PO . "Postfix Numeric")
+    (PR . "Prefix Numeric")
+    (SY . "Symbols Allowing Break After")
+    ;; Other Characters
+    (AI . "Ambiguous (Alphabetic or Ideographic)")
+    (AL . "Alphabetic")
+    (CJ . "Conditional Japanese Starter")
+    (EB . "Emoji Base")
+    (EM . "Emoji Modifier")
+    (H2 . "Hangul LV Syllable")
+    (H3 . "Hangul LVT Syllable")
+    (HL . "Hebrew Letter")
+    (ID . "Ideographic")
+    (JL . "Hangul L Jamo")
+    (JV . "Hangul V Jamo")
+    (JT . "Hangul T Jamo")
+    (RI . "Regional Indicator")
+    (SA . "Complex Context Dependent (South East Asian)")
+    (XX . "Unknown")
+  ))
+
+(define *name-alias-types*
+  '((abbreviation . "Commonly occurring abbreviations (or acronyms) for control codes, format characters, spaces, and variation selectors") 
+    (alternate . "A few widely used alternate names for format characters") 
+    (control . "ISO 6429 names for C0 and C1 control functions, and other commonly occurring names for control codes") 
+    (correction . "Corrections for serious problems in the character names") 
+    (figment . "Several documented labels for C1 control code points which were never actually approved in any standard")))
+
+(define *numeric-types*
+  '((decimal . "The value of the character is represented with an integer value (limited to the range 0..9)")
+    (digit . "As decimal, but also covers digits that need special handling, such as the compatibility superscript digits")
+    (numeric . "The value of the character is represented with a positive or negative integer or rational number")))

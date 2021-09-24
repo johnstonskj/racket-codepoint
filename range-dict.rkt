@@ -23,7 +23,15 @@
 (define (make-range-dict data)
   (rangedict (list->vector (sort data codepoint-range<? #:key car))))
 
+(define (assert-range-dict! v [name 'v])
+  (unless (rangedict? v)
+          (raise-arguments-error 
+            'assert-range-dict
+            "provided value was not a range-dict?" 
+            (symbol->string name) v)))
+
 (define (range-dict-length dict)
+  (assert-range-dict! dict)
   (vector-length (rangedict-data dict)))
 
 (define (range-dict-ref dict k [failure-result (lambda () 
@@ -31,6 +39,8 @@
 													     'range-dict-ref
 													     "no value found for key"
 													     "key" k))])
+  (assert-range-dict! dict)
+  (assert-codepoint! k)
   (range-dict-search dict k 0 (- (vector-length (rangedict-data dict)) 1) failure-result))
 
 (define (range-dict-has-key? dict k)
