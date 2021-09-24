@@ -3,6 +3,7 @@
 (provide 
   *bidi-classes*
   *case-folding-status*
+  *combining-classes*
   *decomposition-compatibility-tags*
   *general-categories*
   *line-breaks*
@@ -48,6 +49,36 @@
     (non-character . "Permanently reserved for internal usage; restricted interchange")
     (reserved . "Reserved for future assignment; restricted interchange")))
 
+(define *combining-classes*
+  '(
+    (0 . "Spacing and enclosing marks; also many vowel and consonant signs, even if nonspacing")
+    (1 . "Marks which overlay a base letter or symbol")
+    (6 . "Diacritic reading marks for CJK unified ideographs")
+    (7 . "Diacritic nukta marks in Brahmi-derived scripts")
+    (8 . "Hiragana/Katakana voicing marks")
+    (9 . "Viramas")
+    (10 . "Start of fixed position classes")
+    (199 . "End of fixed position classes")
+    (200 . "Marks attached at the bottom left")
+    (202 . "Marks attached directly below")
+    (204 . "Marks attached at the bottom right")
+    (208 . "Marks attached to the left")
+    (210 . "Marks attached to the right")
+    (212 . "Marks attached at the top left")
+    (214 . "Marks attached directly above")
+    (216 . "Marks attached at the top right")
+    (218 . "Distinct marks at the bottom left")
+    (220 . "Distinct marks directly below")
+    (222 . "Distinct marks at the bottom right")
+    (224 . "Distinct marks to the left")
+    (226 . "Distinct marks to the right")
+    (228 . "Distinct marks at the top left")
+    (230 . "Distinct marks directly above")
+    (232 . "Distinct marks at the top right")
+    (233 . "Distinct marks subtending two bases")
+    (234 . "Distinct marks extending above two bases")
+    (240 . "Greek iota subscript only")))
+    
 (define *decomposition-compatibility-tags*
   '((font> "Font variant (for example, a blackletter form)")
     (noBreak . "No-break version of a space or hyphen")

@@ -98,6 +98,43 @@
     ...
 }
 
+@defproc[(ucd-letter-category? [c codepoint?] [failure-result (lambda () (raise-arguments-error ...))]) boolean?]{
+    ...
+}
+
+@defproc[(ucd-cased-letter-category? [c codepoint?] [failure-result (lambda () (raise-arguments-error ...))]) boolean?]{
+    ...
+}
+
+@defproc[(ucd-mark-category? [c codepoint?] [failure-result (lambda () (raise-arguments-error ...))]) boolean?]{
+    ...
+}
+
+@defproc[(ucd-number-category? [c codepoint?] [failure-result (lambda () (raise-arguments-error ...))]) boolean?]{
+    ...
+}
+
+@defproc[(ucd-punctuation-category? [c codepoint?] [failure-result (lambda () (raise-arguments-error ...))]) boolean?]{
+    ...
+}
+
+@defproc[(ucd-symbol-category? [c codepoint?] [failure-result (lambda () (raise-arguments-error ...))]) boolean?]{
+    ...
+}
+
+@defproc[(ucd-separator-category? [c codepoint?] [failure-result (lambda () (raise-arguments-error ...))]) boolean?]{
+    ...
+}
+
+@defproc[(ucd-other-category? [c codepoint?] [failure-result (lambda () (raise-arguments-error ...))]) boolean?]{
+    ...
+}
+
+@defproc[(ucd-codepoint-type [c codepoint?] [failure-result (lambda () (raise-arguments-error ...))]) symbol?]{
+    ...
+    See @racket[*codepoint-types*].
+}
+
 @defproc[(ucd-bidi-class [c codepoint?] [failure-result (lambda () (raise-arguments-error ...))]) symbol?]{
     ...
 
@@ -232,6 +269,16 @@
 
 @defthing[*case-folding-status* (listof (cons/c symbol? string?))]{
     ...
+}
+
+@defthing[*codepoint-types* (listof (cons/c symbol? string?))]{
+    ...
+    From @hyperlink["https://www.unicode.org/versions/Unicode14.0.0/ch02.pdf"]{Chapter 2}, Table 2-3 Types of Code Points.
+}
+
+@defthing[*combining-classes* (listof (cons/c symbol? string?))]{
+    ...
+    From @hyperlink["https://www.unicode.org/reports/tr44/#CCC_Values_Table"]{UAX #44; Table 15. Canonical_Combining_Class Values}
 }
 
 @defthing[*decomposition-compatibility-tags* (listof (cons/c symbol? string?))]{
