@@ -3,7 +3,7 @@
 @(require racket/file scribble/core)
 
 
-@title[#:version "0.1"]{Package codepoint.}
+@title[#:version "0.1"]{Package codepoint}
 @author[(author+email "Simon Johnston" "johnstonskj@gmail.com")]
 
 @include-section["codepoint.scrbl"]
@@ -11,6 +11,8 @@
 @include-section["codepoint-properties.scrbl"]
 
 @include-section["codepoint-fold.scrbl"]
+
+@include-section["generator.scrbl"]
 
 @section{License}
 
