@@ -93,6 +93,18 @@ and @racket[codepoint-private-use?]).
     ]
 }
 
+@defproc[(string->codepoint [str string?]) codepoint?]{
+    Convert a string to a codepoint, accepting any Racket integer format, a C-style format, or the
+    Unicode format.
+    @examples[
+        #:eval example-eval
+        (string->codepoint "0304")
+        (string->codepoint "#x0304")
+        (string->codepoint "0x0304")
+        (string->codepoint "U+0304")
+    ]
+}
+
 @defproc[(assert-codepoint! [v any/c?] [name symbol? 'v]) void?]{
     Raises an argument error if the provided value is not a valid codepoint. The optional parameter
     @racket[name] is used to override the name of the value @racket[v] reported in the error.
@@ -171,16 +183,16 @@ and the @racket[codepoint-range] structure is a typed pair of @code{start} and @
 }
 
 @defproc[(codepoint-range-contains? [cpr codepoint-range?] [cp codepoint?]) boolean?]{
-    Returns @racket[#t] if the codepoint @code[cp] is contained within the codepoint-range @racket[cpr].
+    Returns @racket[#t] if the codepoint @racket[cp] is contained within the codepoint-range @racket[cpr].
 }
 
 @defproc[(codepoint-range-contains-any? [cpr codepoint-range?] [cp codepoint?] ...) boolean?]{
-    Returns @racket[#t] if @italic{any of} the codepoint values in the list @code[cp] is contained 
+    Returns @racket[#t] if @italic{any of} the codepoint values in the list @racket[cp] is contained 
     within the codepoint-range @racket[cpr].
 }
 
 @defproc[(codepoint-range-contains-all? [cpr codepoint-range?] [cp codepoint?] ...) boolean?]{
-    Returns @racket[#t] if @italic{all of} the codepoint values in the list @code[cp] is contained 
+    Returns @racket[#t] if @italic{all of} the codepoint values in the list @racket[cp] is contained 
     within the codepoint-range @racket[cpr].
 }
 
@@ -190,7 +202,8 @@ and the @racket[codepoint-range] structure is a typed pair of @code{start} and @
 }
 
 @defproc[(codepoint-range-any-intersects? [cpr-list (listof codepoint-range?)]) boolean?]{
-    ...
+    Returns @racket[#t] if any codepoint-range within the list @racket[cpr-list] overlaps in any way with 
+    ay other.
 }
 
 @defproc[(codepoint-range->inclusive-range [cpr codepoint-range?]) range?]{

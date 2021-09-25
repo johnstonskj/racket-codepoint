@@ -1,6 +1,6 @@
 #lang racket/base
 
-(require racket/format racket/list)
+(require racket/format racket/list racket/string)
 
 (provide
   *max-codepoint-value*
@@ -11,6 +11,7 @@
   codepoint->char
   char->codepoint
   codepoint->unicode-string
+  string->codepoint
   codepoint-plane
   codepoint-plane-name
   assert-codepoint!)
@@ -125,3 +126,10 @@
 (define (codepoint->unicode-string codepoint)
   (assert-codepoint! codepoint)
   (format "U+~a" (~r codepoint #:base '(up 16) #:min-width 4 #:pad-string "0")))
+
+(define (string->codepoint str)
+  (let ([cp (if (or (string-prefix? str "U+") (string-prefix? str "0x"))
+                (string->number (substring str 2) 16)
+                (string->number str))])
+    (assert-codepoint! cp)
+    cp))

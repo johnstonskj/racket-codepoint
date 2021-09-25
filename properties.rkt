@@ -208,11 +208,17 @@
 
 (define (ucd-numeric-type codepoint [failure-result (lambda () (codepoint-not-found codepoint 'numeric-type))])
   (assert-codepoint! codepoint)
-  (hash-ref (hash-ref (force *ucd-numerics*) codepoint failure-result) 'type))
+  (let ([data (hash-ref (force *ucd-numerics*) codepoint failure-result)])
+    (if (false? data)
+        #f
+        (hash-ref data 'type failure-result))))
 
 (define (ucd-numeric-value codepoint [failure-result (lambda () (codepoint-not-found codepoint 'numeric-value))])
   (assert-codepoint! codepoint)
-  (hash-ref (hash-ref (force *ucd-numerics*) codepoint failure-result) 'value))
+  (let ([data (hash-ref (force *ucd-numerics*) codepoint failure-result)])
+    (if (false? data)
+        #f
+        (hash-ref data 'value failure-result))))
 
 ;; ---------- Implementation - codepoint simple-*-mappings
 
@@ -282,4 +288,51 @@
     "no property data found for codepoint" 
     "codepoint" cp 
     "property" p))
+
+;; ---------- Implementation - command-line tool
+
+(module+ main
+  (require racket/format racket/logging racket/vector codepoint/enums)
+
+  (define (display-row caption text)
+    (display (~a caption #:width 16 #:align 'right))
+    (display ": ")
+    (displayln text))
+
+  (define (lookup cp ucd-property enum)
+    (cdr (assoc (ucd-property cp) enum)))
+
+  (with-logging-to-port 
+    (current-error-port) 
+    (lambda ()
+      (let ([args (current-command-line-arguments)])
+        (if (vector-empty? args)
+            (displayln "Usage: ucd-info codepoint ...")
+            (for ([arg args])
+              (let ([cp (string->codepoint arg)])
+                (assert-codepoint! cp)
+                (newline)
+                (display-row (codepoint->unicode-string cp) (ucd-name cp))
+                (newline)
+                ;; aliases
+                (display-row "General category" (lookup cp ucd-general-category *general-categories*))
+                (display-row "Block name" (ucd-block-name cp))
+                (display-row "Scripts" (string-join (map symbol->string (ucd-scripts cp)) ", "))
+;;                (display-row "Script extensions" (string-join (map symbol->string (ucd-script-extensions cp)) ", "))
+                (newline)
+                (display-row "Combining class" (lookup cp ucd-canonical-combining-class *combining-classes*))
+                (display-row "Line break" (lookup cp ucd-line-break *line-breaks*))
+                (display-row "Bidi class" (lookup cp ucd-bidi-class *bidi-classes*))
+                (let ([numeric-type (ucd-numeric-type cp (lambda () #f))])
+                  (unless (false? numeric-type)
+                    (display-row "Numeric type" numeric-type)
+                    (display-row "Numeric value" (ucd-numeric-value cp))))
+                (when (ucd-has-mirror-glyph? cp)
+                      (display-row "Mirror glyph" (codepoint->unicode-string (ucd-mirror-glyph cp))))
+                (when (ucd-bracket? cp)
+                      (display-row "Bracket type" (symbol->string (ucd-bracket-type cp)))
+                      (display-row "Matching bracket" (codepoint->unicode-string (ucd-matching-bracket cp))))
+                (display-row "Added in" (ucd-age cp))
+                        )))))
+    'info))
 

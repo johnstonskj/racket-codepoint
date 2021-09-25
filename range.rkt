@@ -61,7 +61,7 @@
 
 (define (codepoint-range-length cpr)
   (assert-codepoint-range! cpr)
-  (- (codepoint-range-end cpr) (codepoint-range-start cpr)))
+  (add1 (- (codepoint-range-end cpr) (codepoint-range-start cpr))))
 
 (define (codepoint-range=? lhs rhs)
   (assert-codepoint-range! lhs 'lhs)

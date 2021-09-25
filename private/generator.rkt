@@ -12,7 +12,6 @@
   racket/file
   racket/hash
   racket/list
-  racket/logging
   racket/promise
   racket/string
   racket/system
@@ -454,8 +453,10 @@
                   *unicode-data-source*)])
     (generate-from-source source root-dir)))
 
+;; ---------- Implementation - command-line tool
 
 (module+ main
+  (require racket/logging)
   (with-logging-to-port 
     (current-error-port) 
     (lambda ()
