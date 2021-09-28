@@ -19,6 +19,15 @@
   ucd-name->symbol
   ucd-name-aliases
   ucd-general-category
+  ucd-letter-category?
+  ucd-cased-letter-category?
+  ucd-mark-category?
+  ucd-number-category?
+  ucd-punctuation-category?
+  ucd-symbol-category?
+  ucd-separator-category?
+  ucd-other-category?
+  ucd-codepoint-type
   ucd-canonical-combining-class
   ucd-bidi-class
   ucd-bidi-mirrored?
@@ -86,48 +95,51 @@
 (define *ucd-general-category*
   (load-generated-module (current-directory) "general-category"))
 
+(define (is-member? v lst)
+  (if (member v lst) #t #f))
+
 (define (ucd-general-category codepoint [failure-result (lambda () (codepoint-not-found codepoint 'general-category))])
   (assert-codepoint! codepoint)
   (hash-ref (force *ucd-general-category*) codepoint failure-result))
 
 (define (ucd-letter-category? codepoint [failure-result (lambda () (codepoint-not-found codepoint 'general-category))])
   (assert-codepoint! codepoint)
-  (member (ucd-general-category codepoint failure-result) '(Ll Lm Lo Lt Lu)))
+  (is-member? (ucd-general-category codepoint failure-result) '(Ll Lm Lo Lt Lu)))
 
 (define (ucd-cased-letter-category? codepoint [failure-result (lambda () (codepoint-not-found codepoint 'general-category))])
   (assert-codepoint! codepoint)
-  (member (ucd-general-category codepoint failure-result) '(Ll Lt Lu)))
+  (is-member? (ucd-general-category codepoint failure-result) '(Ll Lt Lu)))
 
 (define (ucd-mark-category? codepoint [failure-result (lambda () (codepoint-not-found codepoint 'general-category))])
   (assert-codepoint! codepoint)
-  (member (ucd-general-category codepoint failure-result) '(Mc Me Mn)))
+  (is-member? (ucd-general-category codepoint failure-result) '(Mc Me Mn)))
 
 (define (ucd-number-category? codepoint [failure-result (lambda () (codepoint-not-found codepoint 'general-category))])
   (assert-codepoint! codepoint)
-  (member (ucd-general-category codepoint failure-result) '(Nd Nl No)))
+  (is-member? (ucd-general-category codepoint failure-result) '(Nd Nl No)))
 
 (define (ucd-punctuation-category? codepoint [failure-result (lambda () (codepoint-not-found codepoint 'general-category))])
   (assert-codepoint! codepoint)
-  (member (ucd-general-category codepoint failure-result) '(Pc Pd Pe Pf Pi Po Ps)))
+  (is-member? (ucd-general-category codepoint failure-result) '(Pc Pd Pe Pf Pi Po Ps)))
 
 (define (ucd-symbol-category? codepoint [failure-result (lambda () (codepoint-not-found codepoint 'general-category))])
   (assert-codepoint! codepoint)
-  (member (ucd-general-category codepoint failure-result) '(Sc Sk Sm So)))
+  (is-member? (ucd-general-category codepoint failure-result) '(Sc Sk Sm So)))
 
 (define (ucd-separator-category? codepoint [failure-result (lambda () (codepoint-not-found codepoint 'general-category))])
   (assert-codepoint! codepoint)
-  (member (ucd-general-category codepoint failure-result) '(Zl Zp Zs)))
+  (is-member? (ucd-general-category codepoint failure-result) '(Zl Zp Zs)))
 
 (define (ucd-other-category? codepoint [failure-result (lambda () (codepoint-not-found codepoint 'general-category))])
   (assert-codepoint! codepoint)
-  (member (ucd-general-category codepoint failure-result) '(Cc Cf Cn Co Cs)))
+  (is-member? (ucd-general-category codepoint failure-result) '(Cc Cf Cn Co Cs)))
 
 (define (ucd-codepoint-type codepoint [failure-result (lambda () (codepoint-not-found codepoint 'general-category))])
   (assert-codepoint! codepoint)
   (let ([category (ucd-general-category codepoint failure-result)])
     (cond
-      [(member category '(Ll Lm Lo Lt Lu Mc Me Mn Nd Nl No Pc Pd Pe Pf Pi Po Ps Sc Sk Sm So Zs)) 'graphic]
-      [(member category '(Cf Zl Zp)) 'format]
+      [(is-member? category '(Ll Lm Lo Lt Lu Mc Me Mn Nd Nl No Pc Pd Pe Pf Pi Po Ps Sc Sk Sm So Zs)) 'graphic]
+      [(is-member? category '(Cf Zl Zp)) 'format]
       [(symbol=? category 'Cc) 'control]
       [(symbol=? category 'Co) 'private-use]
       [(symbol=? category 'Cs) 'surrogate]
@@ -151,9 +163,21 @@
   (assert-codepoint! codepoint)
   (hash-ref (hash-ref (force *ucd-bidi*) codepoint failure-result) 'class failure-result))
 
-(define (ucd-bidi-mirrored? codepoint [failure-result (lambda () (codepoint-not-found codepoint 'bidi-mirrored?))])
+(define (ucd-bidi-mirrored? codepoint)
   (assert-codepoint! codepoint)
-  (hash-ref (hash-ref (force *ucd-bidi*) codepoint failure-result) 'mirrored failure-result))
+  (hash-ref (hash-ref (force *ucd-bidi*) codepoint #f) 'mirrored #f))
+
+(define *ucd-bidi-mirroring*
+  (load-generated-module (current-directory) "bidi-mirroring"))
+
+(define (ucd-has-mirror-glyph? codepoint)
+  (assert-codepoint! codepoint)
+  (hash-has-key? (force *ucd-bidi-mirroring*) codepoint))
+
+(define (ucd-mirror-glyph codepoint [failure-result (lambda () (codepoint-not-found codepoint 'matching-bracket))])
+  (if (ucd-has-mirror-glyph? codepoint)
+      (hash-ref (force *ucd-bidi-mirroring*) codepoint failure-result)
+      #f))
 
 (define *ucd-bidi-brackets*
   (load-generated-module (current-directory) "bidi-brackets"))
@@ -167,25 +191,13 @@
       (hash-ref 
         (hash-ref (force *ucd-bidi-brackets*) codepoint failure-result) 
         'type)
-      #f))
+      'none))
 
 (define (ucd-matching-bracket codepoint [failure-result (lambda () (codepoint-not-found codepoint 'matching-bracket))])
   (if (ucd-bracket? codepoint)
       (hash-ref 
         (hash-ref (force *ucd-bidi-brackets*) codepoint failure-result) 
         'matching)
-      #f))
-
-(define *ucd-bidi-mirroring*
-  (load-generated-module (current-directory) "bidi-mirroring"))
-
-(define (ucd-has-mirror-glyph? codepoint)
-  (assert-codepoint! codepoint)
-  (hash-has-key? (force *ucd-bidi-mirroring*) codepoint))
-
-(define (ucd-mirror-glyph codepoint [failure-result (lambda () (codepoint-not-found codepoint 'matching-bracket))])
-  (if (ucd-has-mirror-glyph? codepoint)
-      (hash-ref (force *ucd-bidi-mirroring*) codepoint failure-result)
       #f))
 
 ;; ---------- Implementation - codepoint decomposition*
@@ -251,9 +263,9 @@
 (define *ucd-block-names*
   (load-generated-module (current-directory) "block-names"))
 
-(define (ucd-block-name codepoint [failure-result (lambda () (codepoint-not-found codepoint 'block-name))])
+(define (ucd-block-name codepoint)
   (assert-codepoint! codepoint)
-  (range-dict-ref (force *ucd-block-names*) codepoint failure-result))
+  (range-dict-ref (force *ucd-block-names*) codepoint 'No_Block))
 
 ;; ---------- Implementation - codepoint scripts
 
