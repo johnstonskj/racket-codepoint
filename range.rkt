@@ -91,7 +91,7 @@
 (define (codepoint-range-contains? cpr cp)
   (assert-codepoint-range! cpr)
   (assert-codepoint! cp)
-  (and (>= cp (codepoint-range-start cpr)) (<= cp (codepoint-range-end cpr))))
+  (<= (codepoint-range-start cpr) cp (codepoint-range-end cpr)))
 
 (define (codepoint-range-contains-all? cpr . cpl)
   (for/and ([cp cpl]) (codepoint-range-contains? cpr cp)))
