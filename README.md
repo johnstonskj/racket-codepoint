@@ -4,8 +4,8 @@ codepoint
 Library for operations on Unicode codepoints, and UCD properties.
 
 [![GitHub release](https://img.shields.io/github/release/johnstonskj/racket-codepoint.svg?style=flat-square)](https://github.com/johnstonskj/racket-codepoint/releases)
-[![raco pkg install codepoint](https://img.shields.io/badge/raco%20pkg%20install-dali-blue.svg)](http://pkgs.racket-lang.org/package/racket-codepoint)
-[![Documentation](https://img.shields.io/badge/raco%20docs-racket-codepoint-blue.svg)](http://docs.racket-lang.org/racket-codepoint/index.html)
+[![raco pkg install codepoint](https://img.shields.io/badge/raco%20pkg%20install-codepoint-blue.svg)](http://pkgs.racket-lang.org/package/racket-codepoint)
+[![Documentation](https://img.shields.io/badge/raco%20docs-codepoint-blue.svg)](http://docs.racket-lang.org/codepoint/index.html)
 [![GitHub stars](https://img.shields.io/github/stars/johnstonskj/racket-codepoint.svg)](https://github.com/johnstonskj/racket-codepoint/stargazers)
 ![MIT License](https://img.shields.io/badge/license-MIT-118811.svg)
 
