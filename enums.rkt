@@ -3,6 +3,7 @@
 (provide 
   *bidi-classes*
   *case-folding-status*
+  *codepoint-types*
   *combining-classes*
   *decomposition-compatibility-tags*
   *general-categories*
