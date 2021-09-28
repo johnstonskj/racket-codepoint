@@ -17,7 +17,8 @@
   racket/system
   (only-in srfi/13 string-index)
   codepoint/range
-  codepoint/range-dict)
+  codepoint/range-dict
+  "./ucd.rkt")
 
 ;; ---------- Constant Values
 
@@ -435,7 +436,7 @@
 
   (unless (directory-exists? *source-data-directory*)
     (log-info "Fetching UCD data files...")
-    (system (build-path root-dir "fetch.sh")))
+    (fetch-unicode-character-data root-dir))
 
   (unless (directory-exists? *generate-module-directory*)
     (make-directory *generate-module-directory*))

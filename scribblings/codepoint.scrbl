@@ -125,8 +125,8 @@ and the @racket[codepoint-range] structure is a typed pair of @code{start} and @
     #:prefab
     #:constructor-name make-codepoint-range
 ]{
-    This structure represents an inclusive range @code{start..end}. It ensures that both start and end values 
-    are codepoints, an can be used to test inclusion as well as the basis for iteration.
+    This structure represents an inclusive range @code{start..end}. It ensures that both @code{start} and @code{end} values 
+    are codepoints, @code{start} ≤ @code{end}, and can be used to test codepoint inclusion as well as the basis for iteration.
     @examples[
         #:eval example-eval
         (define ascii (make-codepoint-range 0 127))
@@ -239,24 +239,55 @@ and the @racket[codepoint-range] structure is a typed pair of @code{start} and @
 @section[]{Module codepoint/range-dict}
 @defmodule[codepoint/range-dict]
 
+As some of the Unicode character property files maintain common properties for codepoint ranges they take up
+less space both as data in the package and in-memory at runtime. However, these cannot be directly indexed
+by codepoint to find a property value. The @racket[range-dict] structure provides basic @racket[dict?] functions
+taking a codepoint as key but performs a search through the ranges to find a match.
+
 @defproc[(range-dict? [v any/c]) boolean?]{
-    ...
+    Returns @racket[#t] if the provided value is a valid codepoint range-dict.
 }
 
-@defproc[(make-range-dict? [data (listof (cons/c codepoint-range? hash?))]) range-dict?]{
-    ...
+@defproc[(make-range-dict [data (listof (cons/c codepoint-range? hash?))]) range-dict?]{
+    Construct a new range-dict from an list of pairs where each pair is a mapping from @racket[codepoint-range] 
+    to a property hash.
+
+    @examples[
+        #:eval example-eval
+        (make-range-dict
+          (list
+            (cons 
+              (make-codepoint-range #x0000  #x007F)
+              (make-hash '((block-name "Basic Latin"))))
+            (cons 
+              (make-codepoint-range #x0080 #x00FF)
+              (make-hash '((block-name "Latin-1 Supplement"))))
+            (cons 
+              (make-codepoint-range #x0100 #x017F)
+              (make-hash '((block-name "Latin Extended-A"))))
+            (cons 
+              (make-codepoint-range #x0180 #x024F)
+              (make-hash '((block-name "Latin Extended-B")))))) 
+    ]
 }
 
-@defproc[(range-dict-length [d range-dict?]) exact-nonnegative-integer?]{
-    ...
+@defproc[(range-dict-count [dict range-dict?]) exact-nonnegative-integer?]{
+    Returns the number of keys mapped by @racket[range-dict].
 }
 
-@defproc[(range-dict-has-key? [d range-dict?] [key codepoint-range?]) boolean?]{
-    ...
+@defproc[(range-dict-has-key? [dict range-dict?] [key codepoint-range?]) boolean?]{
+    Returns #t if @racket[dict] contains a value for the given @racket[key], #f otherwise.
+
 }
 
-@defproc[(range-dict-ref [d range-dict?] [key codepoint?] [failure-result (lambda () (raise-arguments-error ...))]) hash?]{
-    ...
+@defproc[(range-dict-ref [dict range-dict?] [key codepoint?] [failure-result (lambda () (raise-arguments-error ...))]) hash?]{
+    Returns the value for key in @racket[dict]. If no value is found for @racket[key], then 
+    @racket[failure-result] determines the result:
+
+    @itemlist[
+        @item{If @racket[failure-result] is a procedure, it is called (through a tail call) with no arguments to produce the result.}
+        @item{Otherwise, @racket[failure-result] is returned as the result.}
+    ]
 }
 
 

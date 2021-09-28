@@ -9,7 +9,7 @@
 (provide
   (rename-out (rangedict? range-dict?))
   make-range-dict
-  range-dict-length
+  range-dict-count
   range-dict-ref
   range-dict-has-key?)
 
@@ -30,7 +30,7 @@
             "provided value was not a range-dict?" 
             (symbol->string name) v)))
 
-(define (range-dict-length dict)
+(define (range-dict-count dict)
   (assert-range-dict! dict)
   (vector-length (rangedict-data dict)))
 
@@ -56,4 +56,6 @@
 	  	  [(symbol=? position 'before) (range-dict-search dict k start (sub1 mid) failure-result)]
 	  	  [(symbol=? position 'after)  (range-dict-search dict k (add1 mid) end failure-result)]
 	  	  [(symbol=? position 'within) (cdr mid-row)]))
-	  (failure-result)))
+	  (if (not (procedure? failure-result))
+	  		failure-result
+	  		(failure-result))))
