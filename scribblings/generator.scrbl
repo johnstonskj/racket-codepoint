@@ -17,7 +17,7 @@ used to create a set of data files according to the following steps.
   @item{If the temporary directory, @code{data}, is not present:
 	@itemlist[#:style 'ordered
 	  @item{create the temporary directory,}
-	  @item{use the curl command to download the required files, and}
+	  @item{download the required files, and}
 	  @item{unzip the @code{UCD.zip} file.}
     ]}
   @item{If the output directory, @code{generated}, is not present then create it.}
