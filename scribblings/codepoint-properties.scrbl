@@ -45,6 +45,7 @@ property.
     (ucd-latin-1? cp)
     (ucd-name cp)
     (ucd-name-aliases cp)
+    (ucd-name->codepoint "SECTION SIGN")
     (ucd-general-category cp)
     (cdr (assoc (ucd-general-category cp) *general-categories*))
     (ucd-age cp)
@@ -100,6 +101,13 @@ For @italic{any} function below that performs a property lookup @italic{and} has
         (ucd-name->symbol #x3400)
         (ucd-name->symbol #xF90B)
     ]
+}
+
+@defproc[(ucd-name->codepoint [name string?]) (or/c codepoint? #f)]{
+
+ Returns the codepoint associated with the given name (Or alias). Names are ASCII uppercase and a small set of
+ punctuation characters. Returns @code{#f} if the name is not found.
+
 }
 
 @defproc[(ucd-name-aliases [c codepoint?] [failure-result (lambda () (raise-arguments-error ...))]) (listof string?)]{

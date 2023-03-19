@@ -16,6 +16,7 @@
   ucd-ascii?
   ucd-latin-1?
   ucd-name
+  ucd-name->codepoint
   ucd-name->symbol
   ucd-name-aliases
   ucd-general-category
@@ -69,6 +70,19 @@
 (define (ucd-name codepoint [failure-result (lambda () (codepoint-not-found codepoint 'name))])
   (assert-codepoint! codepoint)
   (hash-ref (force *ucd-name*) codepoint failure-result))
+
+(define *ucd-reverse-name*
+  (delay
+    (for*/fold ([name-table (for/hash ([(cp name) (in-hash (force *ucd-name*))]) (values name cp))])
+               ([(cp aliases) (in-hash (force *ucd-name-aliases*))]
+                [alias (in-list aliases)])
+      (hash-set name-table (hash-ref alias 'alias) cp))))
+
+; Not sure if returning false or raising an exception is better when a name isn't found
+; Former is easier to work with, latter is more consistent with the rest of the functions.
+; The failure-result argument to the functions in this module aren't documented, which doesn't help.
+(define (ucd-name->codepoint name [failure-result #f #;(lambda () (raise-arguments-error 'ucd-name->codepoint "codepoint name not found" "name" name))])
+  (hash-ref (force *ucd-reverse-name*) name failure-result))
 
 (define (ucd-name->symbol codepoint [failure-result (lambda () (codepoint-not-found codepoint 'name))])
   (assert-codepoint! codepoint)
